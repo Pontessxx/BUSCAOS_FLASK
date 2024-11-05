@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selecionar Filtros</title>
+</head>
+<body>
+    <h1>Selecione os Filtros</h1>
+
+    {% if status %}
+        <p style="color: {% if 'Erro' in status %}red{% else %}green{% endif %}; font-weight: bold;">
+            {{ status }}
+        </p>
+    {% endif %}
+
+    <form method="POST" action="/">
+        <label for="anos">Anos:</label>
+        <select name="anos" id="anos">
+            {% for ano in anos %}
+                <option value="{{ ano }}" {% if filtros.anos == ano %}selected{% endif %}>{{ ano }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="sites">Sites:</label>
+        <select name="sites" id="sites">
+            {% for site in sites %}
+                <option value="{{ site }}" {% if filtros.sites == site %}selected{% endif %}>{{ site }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="meses">Meses:</label>
+        <select name="meses" id="meses">
+            {% for mes in meses %}
+                <option value="{{ mes }}" {% if filtros.meses == mes %}selected{% endif %}>{{ mes }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="os">Código OS:</label>
+        <select name="os" id="os">
+            {% for os_codigo in os_codigos %}
+                <option value="{{ os_codigo }}" {% if filtros.os == os_codigo %}selected{% endif %}>{{ os_codigo }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="categoria_primaria">Categoria Primária:</label>
+        <select name="categoria_primaria" id="categoria_primaria">
+            {% for categoria in categorias_primarias %}
+                <option value="{{ categoria }}" {% if filtros.categoria_primaria == categoria %}selected{% endif %}>{{ categoria }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="categoria_secundaria">Categoria Secundária:</label>
+        <select name="categoria_secundaria" id="categoria_secundaria">
+            {% for categoria_secundaria in categorias_secundarias %}
+                <option value="{{ categoria_secundaria }}" {% if filtros.categoria_secundaria == categoria_secundaria %}selected{% endif %}>{{ categoria_secundaria }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Buscar</button>
+    </form>
+
+    {% if resultados %}
+        <h2>Resultados da Busca</h2>
+        <table border="1">
+            <tr>
+                <th>Anos</th>
+                <th>Sites</th>
+                <th>OS</th>
+                <th>Mês</th>
+                <th>Categoria Primária</th>
+                <th>Categoria Secundária</th>
+                <th>Path</th>
+            </tr>
+            {% for resultado in resultados %}
+                <tr>
+                    {% for item in resultado %}
+                        <td>{{ item }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+
+        <h2>Contagem de Arquivos "02 - CONCLUSÃO" por Número ANOMESNUM</h2>
+        <table border="1">
+            <tr>
+                <th>Nome do Diretório (ANOMESNUM)</th>
+                <th>Contagem de "02 - CONCLUSÃO"</th>
+            </tr>
+            {% for numero, count in conclusao_por_numero.items() %}
+                <tr>
+                    <td>{{ numero }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <h2>Diretórios que não possuem "02 - CONCLUSÃO"</h2>
+        <table border="1">
+            <tr>
+                <th>Nome do Diretório (ANOMESNUM)</th>
+            </tr>
+            {% for dir_name in sem_conclusao %}
+                <tr>
+                    <td>{{ dir_name }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>
