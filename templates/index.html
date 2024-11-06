@@ -82,31 +82,26 @@
             {% endfor %}
         </table>
 
-        <h2>Contagem de Arquivos "02 - CONCLUSÃO" por Número ANOMESNUM</h2>
-        <table border="1">
-            <tr>
-                <th>Nome do Diretório (ANOMESNUM)</th>
-                <th>Contagem de "02 - CONCLUSÃO"</th>
-            </tr>
-            {% for numero, count in conclusao_por_numero.items() %}
-                <tr>
-                    <td>{{ numero }}</td>
-                    <td>{{ count }}</td>
-                </tr>
+        <h2>Códigos Extraídos</h2>
+        <ul>
+            {% for codigo in codigos_extraidos %}
+                <li>{{ codigo }}</li>
             {% endfor %}
-        </table>
+        </ul>
 
-        <h2>Diretórios que não possuem "02 - CONCLUSÃO"</h2>
-        <table border="1">
-            <tr>
-                <th>Nome do Diretório (ANOMESNUM)</th>
-            </tr>
-            {% for dir_name in sem_conclusao %}
-                <tr>
-                    <td>{{ dir_name }}</td>
-                </tr>
+        <h2>Códigos Encontrados</h2>
+        <ul>
+            {% for codigo in codigos_encontrados %}
+                <li>{{ codigo }}</li>
             {% endfor %}
-        </table>
+        </ul>
+
+        <h2>Códigos Não Encontrados</h2>
+        <ul>
+            {% for codigo in codigos_nao_encontrados %}
+                <li>{{ codigo }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
 </body>
 </html>
