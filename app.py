@@ -6,6 +6,7 @@ from rich import print
 import subprocess
 
 app = Flask(__name__)
+app.secret_key = 'chavesecreta'
 
 # Configuração da string de conexão
 DATABASE_PATH = r"./database/os_database.accdb"

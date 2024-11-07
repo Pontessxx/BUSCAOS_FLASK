@@ -15,6 +15,7 @@
         </p>
     {% endif %}
 
+    <!-- Formulário de filtros -->
     <form method="POST" action="/">
         <label for="anos">Anos:</label>
         <select name="anos" id="anos">
@@ -61,6 +62,9 @@
         <button type="submit">Buscar</button>
     </form>
 
+    <!-- Div para exibir a mensagem de sucesso ou erro ao abrir o diretório -->
+    <div id="mensagem" style="margin-top: 20px; font-weight: bold;"></div>
+
     {% if resultados %}
         <h2>Resultados da Busca</h2>
         <table border="1">
@@ -81,28 +85,55 @@
                 </tr>
             {% endfor %}
         </table>
+    {% endif %}
 
+    {% if codigos_extraidos %}
         <h2>Códigos Extraídos</h2>
         <ul>
             {% for codigo in codigos_extraidos %}
-                <li><a href="{{ url_for('abrir_diretorio', codigo=codigo) }}" target="_blank">{{ codigo }}</a></li>
+                <li>
+                    <a href="#" onclick="abrirDiretorio('{{ codigo }}'); return false;">{{ codigo }}</a>
+                </li>
             {% endfor %}
         </ul>
+    {% endif %}
 
+    {% if codigos_encontrados %}
         <h2>Códigos Encontrados</h2>
         <ul>
             {% for codigo in codigos_encontrados %}
-                <li><a href="{{ url_for('abrir_diretorio', codigo=codigo) }}" target="_blank">{{ codigo }}</a></li>
+                <li>
+                    <a href="#" onclick="abrirDiretorio('{{ codigo }}'); return false;">{{ codigo }}</a>
+                </li>
             {% endfor %}
         </ul>
+    {% endif %}
 
+    {% if codigos_nao_encontrados %}
         <h2>Códigos Não Encontrados</h2>
         <ul>
             {% for codigo in codigos_nao_encontrados %}
-                <li><a href="{{ url_for('abrir_diretorio', codigo=codigo) }}" target="_blank">{{ codigo }}</a></li>
+                <li>
+                    <a href="#" onclick="abrirDiretorio('{{ codigo }}'); return false;">{{ codigo }}</a>
+                </li>
             {% endfor %}
         </ul>
-
     {% endif %}
+
+    <!-- JavaScript para chamada assíncrona da função abrir_diretorio -->
+    <script>
+        function abrirDiretorio(codigo) {
+            fetch(`/abrir_diretorio/${codigo}`)
+                .then(response => response.text())
+                .then(message => {
+                    // Exibe a mensagem de retorno na div "mensagem"
+                    document.getElementById("mensagem").innerText = message;
+                })
+                .catch(error => {
+                    document.getElementById("mensagem").innerText = "Erro ao tentar abrir o diretório.";
+                    console.error("Erro:", error);
+                });
+        }
+    </script>
 </body>
 </html>
