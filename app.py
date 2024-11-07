@@ -3,6 +3,7 @@ import pyodbc
 import os
 from os.path import join
 from rich import print
+import subprocess
 
 app = Flask(__name__)
 
@@ -14,8 +15,7 @@ conn_str = (
 )
 
 conn = pyodbc.connect(conn_str)
-
-
+dic_codigo_path = {}
 
 # Função para extrair códigos com prefixo opcional
 def extract_code(text):
@@ -41,7 +41,6 @@ def home():
     codigos_extraidos = []
     codigos_encontrados = []
     codigos_nao_encontrados = []
-    dic_codigo_path = {}
 
     cursor = conn.cursor()
     # Obter valores únicos de ANOS, SITES, MES, CÓDIGO OS, CATEGORIA PRIMÁRIA e CATEGORIA SECUNDÁRIA
@@ -149,6 +148,22 @@ def home():
                            codigos_extraidos=codigos_extraidos, 
                            codigos_encontrados=codigos_encontrados, 
                            codigos_nao_encontrados=codigos_nao_encontrados)
+
+
+@app.route('/abrir_diretorio/<codigo>')
+def abrir_diretorio(codigo):
+    path = dic_codigo_path.get(codigo)
+    if path:
+        try:
+            # Abra o explorador de arquivos no caminho especificado
+            subprocess.Popen(f'explorer "{path}"')  # Para Windows
+            # Para MacOS, use: subprocess.Popen(["open", path])
+            # Para Linux, use: subprocess.Popen(["xdg-open", path])
+            return f"Abrindo o explorador de arquivos em: {path}", 200
+        except Exception as e:
+            return f"Erro ao abrir o explorador: {e}", 500
+    return "Caminho não encontrado para o código especificado.", 404
+
 
 if __name__ == '__main__':
     app.run(debug=True)

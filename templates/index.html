@@ -85,23 +85,24 @@
         <h2>Códigos Extraídos</h2>
         <ul>
             {% for codigo in codigos_extraidos %}
-                <li>{{ codigo }}</li>
+                <li><a href="{{ url_for('abrir_diretorio', codigo=codigo) }}" target="_blank">{{ codigo }}</a></li>
             {% endfor %}
         </ul>
 
         <h2>Códigos Encontrados</h2>
         <ul>
             {% for codigo in codigos_encontrados %}
-                <li>{{ codigo }}</li>
+                <li><a href="{{ url_for('abrir_diretorio', codigo=codigo) }}" target="_blank">{{ codigo }}</a></li>
             {% endfor %}
         </ul>
 
         <h2>Códigos Não Encontrados</h2>
         <ul>
             {% for codigo in codigos_nao_encontrados %}
-                <li>{{ codigo }}</li>
+                <li><a href="{{ url_for('abrir_diretorio', codigo=codigo) }}" target="_blank">{{ codigo }}</a></li>
             {% endfor %}
         </ul>
+
     {% endif %}
 </body>
 </html>
