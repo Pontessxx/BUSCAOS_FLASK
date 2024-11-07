@@ -15,6 +15,8 @@ conn_str = (
 
 conn = pyodbc.connect(conn_str)
 
+
+
 # Função para extrair códigos com prefixo opcional
 def extract_code(text):
     parts = text.split()
@@ -39,6 +41,7 @@ def home():
     codigos_extraidos = []
     codigos_encontrados = []
     codigos_nao_encontrados = []
+    dic_codigo_path = {}
 
     cursor = conn.cursor()
     # Obter valores únicos de ANOS, SITES, MES, CÓDIGO OS, CATEGORIA PRIMÁRIA e CATEGORIA SECUNDÁRIA
@@ -108,12 +111,15 @@ def home():
                         code = extract_code(dir_name)  # Aplica a extração no nome do diretório
                         if code:
                             codigos_extraidos.append(code)
+                            dic_codigo_path[code] = join(root, dir_name)  # Armazena o código e o caminho associado
                     
                     # Extrai e armazena códigos dos nomes dos arquivos
                     for file_name in files:
                         code = extract_code(file_name)  # Aplica a extração no nome do arquivo
                         if code:
                             codigos_extraidos.append(code)
+                            dic_codigo_path[code] = join(root, file_name)  # Armazena o código e o caminho associado
+
                 # Iterar sobre os códigos extraídos e verificar se estão nos caminhos
                 for codigo in codigos_extraidos:
                     encontrado = False
@@ -124,11 +130,6 @@ def home():
                             break
                     if not encontrado:
                         codigos_nao_encontrados.append(codigo)
-            # print("Diretórios com conclusão:", possui_conclusao)
-            # print("Diretórios sem conclusão:", nao_possui_conclusao)
-            # print("Códigos extraídos:", codigos_extraidos)
-            # print("Códigos encontrados:", codigos_encontrados)
-            # print("Códigos não encontrados:", codigos_nao_encontrados)
 
         except Exception as e:
             status = f"Erro durante a busca: {str(e)}"
