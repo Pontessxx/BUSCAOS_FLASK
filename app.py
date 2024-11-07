@@ -57,6 +57,7 @@ def home():
     categorias_primarias = [row[0] for row in cursor.fetchall()]
     cursor.execute("SELECT DISTINCT CATEGORIA_SECUNDARIA FROM PROCURA")
     categorias_secundarias = [row[0] for row in cursor.fetchall()]
+    
     if request.method == 'POST':
         try:
             # Capturar os valores dos filtros do formulário
@@ -92,35 +93,30 @@ def home():
                 status = "Busca realizada com sucesso!"
             else:
                 status = "Nenhum resultado encontrado para os filtros aplicados."
-            # Percorrer os resultados para verificar os arquivos "02 - CONCLUSÃO"
+            
+            # Processar diretórios e arquivos com base nos resultados
+            # Este código extrai e classifica os códigos, preenchendo as listas `codigos_extraidos`, `codigos_encontrados`, etc.
+            # Como implementado no código original
             for resultado in resultados:
                 path = resultado[-1]
                 print(path)
                 for root, dirs, files in os.walk(path):
-                    # Verifica se há algum arquivo com "02 - CONCLUSÃO" no nome no diretório atual
                     has_conclusao = any("02 - CONCLUSÃO" in file_name for file_name in files)
-                    
-                    # Adiciona o diretório à lista apropriada
                     if has_conclusao:
                         possui_conclusao.append(root)
                     else:
                         nao_possui_conclusao.append(root)
-                    
-                    # Extrai e armazena códigos dos nomes dos diretórios
                     for dir_name in dirs:
-                        code = extract_code(dir_name)  # Aplica a extração no nome do diretório
+                        code = extract_code(dir_name)
                         if code:
                             codigos_extraidos.append(code)
-                            dic_codigo_path[code] = join(root, dir_name)  # Armazena o código e o caminho associado
-                    
-                    # Extrai e armazena códigos dos nomes dos arquivos
+                            dic_codigo_path[code] = join(root, dir_name)
                     for file_name in files:
-                        code = extract_code(file_name)  # Aplica a extração no nome do arquivo
+                        code = extract_code(file_name)
                         if code:
                             codigos_extraidos.append(code)
-                            dic_codigo_path[code] = join(root, file_name)  # Armazena o código e o caminho associado
+                            dic_codigo_path[code] = join(root, file_name)
 
-                # Iterar sobre os códigos extraídos e verificar se estão nos caminhos
                 for codigo in codigos_extraidos:
                     encontrado = False
                     for caminho in possui_conclusao:
@@ -149,6 +145,7 @@ def home():
                            codigos_extraidos=codigos_extraidos, 
                            codigos_encontrados=codigos_encontrados, 
                            codigos_nao_encontrados=codigos_nao_encontrados)
+
 
 
 @app.route('/abrir_diretorio/<codigo>')
