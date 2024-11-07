@@ -89,35 +89,50 @@
 
     {% if codigos_extraidos %}
         <h2>Códigos Extraídos</h2>
-        <ul>
+        <table border="1">
+            <tr>
+                <th>Código</th>
+                <th>Ação</th>
+            </tr>
             {% for codigo in codigos_extraidos %}
-                <li>
-                    <a href="#" onclick="abrirDiretorio('{{ codigo }}'); return false;">{{ codigo }}</a>
-                </li>
+                <tr>
+                    <td>{{ codigo }}</td>
+                    <td><a href="#" onclick="abrirDiretorio('{{ codigo }}'); return false;">Abrir Diretório</a></td>
+                </tr>
             {% endfor %}
-        </ul>
+        </table>
     {% endif %}
 
     {% if codigos_encontrados %}
         <h2>Códigos Encontrados</h2>
-        <ul>
+        <table border="1">
+            <tr>
+                <th>Código</th>
+                <th>Ação</th>
+            </tr>
             {% for codigo in codigos_encontrados %}
-                <li>
-                    <a href="#" onclick="abrirDiretorio('{{ codigo }}'); return false;">{{ codigo }}</a>
-                </li>
+                <tr>
+                    <td>{{ codigo }}</td>
+                    <td><a href="#" onclick="abrirDiretorio('{{ codigo }}'); return false;">Abrir Diretório</a></td>
+                </tr>
             {% endfor %}
-        </ul>
+        </table>
     {% endif %}
 
     {% if codigos_nao_encontrados %}
         <h2>Códigos Não Encontrados</h2>
-        <ul>
+        <table border="1">
+            <tr>
+                <th>Código</th>
+                <th>Ação</th>
+            </tr>
             {% for codigo in codigos_nao_encontrados %}
-                <li>
-                    <a href="#" onclick="abrirDiretorio('{{ codigo }}'); return false;">{{ codigo }}</a>
-                </li>
+                <tr>
+                    <td>{{ codigo }}</td>
+                    <td><a href="#" onclick="abrirDiretorio('{{ codigo }}'); return false;">Abrir Diretório</a></td>
+                </tr>
             {% endfor %}
-        </ul>
+        </table>
     {% endif %}
 
     <!-- JavaScript para chamada assíncrona da função abrir_diretorio -->
