@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulário Dinâmico</title>
+</head>
+<body>
+    <h2>Filtro de Registros</h2>
+    <form method="POST" action="/">
+        <label for="anos">Ano:</label>
+        <select name="anos" id="anos" onchange="atualizarSites()">
+            <option value="">Selecione o Ano</option>
+            {% for ano in anos %}
+                <option value="{{ ano }}" {% if filtros.anos == ano %}selected{% endif %}>{{ ano }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="sites">Site:</label>
+        <select name="sites" id="sites" onchange="atualizarMeses()" disabled>
+            <option value="">Selecione o Site</option>
+        </select>
+
+        <label for="meses">Mês:</label>
+        <select name="meses" id="meses" onchange="atualizarOS()" disabled>
+            <option value="">Selecione o Mês</option>
+        </select>
+
+        <label for="os">Código OS:</label>
+        <select name="os" id="os" onchange="atualizarCategoriaPrimaria()" disabled>
+            <option value="">Selecione o Código OS</option>
+        </select>
+
+        <label for="categoria_primaria">Categoria Primária:</label>
+        <select name="categoria_primaria" id="categoria_primaria" onchange="atualizarCategoriaSecundaria()" disabled>
+            <option value="">Selecione a Categoria Primária</option>
+        </select>
+
+        <label for="categoria_secundaria">Categoria Secundária:</label>
+        <select name="categoria_secundaria" id="categoria_secundaria" disabled>
+            <option value="">Selecione a Categoria Secundária</option>
+        </select>
+
+        <button type="submit">Buscar</button>
+    </form>
+
+    <p><strong>{{ status }}</strong></p>
+    
+    <!-- Resultados da Busca -->
+    {% if resultados %}
+        <h3>Resultados da Busca</h3>
+        <table border="1">
+            <tr>
+                <th>Ano</th><th>Site</th><th>OS</th><th>Mês</th>
+                <th>Categoria Primária</th><th>Categoria Secundária</th><th>Path</th>
+            </tr>
+            {% for resultado in resultados %}
+                <tr>
+                    {% for item in resultado %}
+                        <td>{{ item }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+    <h2>Códigos Extraídos</h2>
+    <table border="1">
+        <tr>
+            <th>Código</th>
+            <th>Ação</th>
+        </tr>
+        {% for codigo in codigos_extraidos %}
+            <tr>
+                <td>{{ codigo }}</td>
+                <td><a href="#" onclick="abrirDiretorio('{{ codigo }}'); return false;">Abrir Diretório</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Códigos Encontrados</h2>
+    <table border="1">
+        <tr>
+            <th>Código</th>
+            <th>Ação</th>
+        </tr>
+        {% for codigo in codigos_encontrados %}
+            <tr>
+                <td>{{ codigo }}</td>
+                <td><a href="#" onclick="abrirDiretorio('{{ codigo }}'); return false;">Abrir Diretório</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Códigos Não Encontrados</h2>
+    <table border="1">
+        <tr>
+            <th>Código</th>
+            <th>Ação</th>
+        </tr>
+        {% for codigo in codigos_nao_encontrados %}
+            <tr>
+                <td>{{ codigo }}</td>
+                <td><a href="#" onclick="abrirDiretorio('{{ codigo }}'); return false;">Abrir Diretório</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    <!-- JavaScript para os Selects Dinâmicos -->
+    <script>
+        function abrirDiretorio(codigo) {
+            fetch(`/abrir_diretorio/${codigo}`)
+                .then(response => response.text())
+                .then(message => {
+                    // Exibe a mensagem de retorno na div "mensagem"
+                    document.getElementById("mensagem").innerText = message;
+                })
+                .catch(error => {
+                    document.getElementById("mensagem").innerText = "Erro ao tentar abrir o diretório.";
+                    console.error("Erro:", error);
+                });
+        }
+        async function atualizarSites() {
+            const ano = document.getElementById('anos').value;
+            if (ano) {
+                const response = await fetch(`/get_sites?ano=${ano}`);
+                const sites = await response.json();
+                preencherSelect('sites', sites);
+                document.getElementById('sites').disabled = false;
+            }
+        }
+
+        async function atualizarMeses() {
+            const site = document.getElementById('sites').value;
+            if (site) {
+                const response = await fetch(`/get_meses?site=${site}`);
+                const meses = await response.json();
+                preencherSelect('meses', meses);
+                document.getElementById('meses').disabled = false;
+            }
+        }
+
+        async function atualizarOS() {
+            const mes = document.getElementById('meses').value;
+            if (mes) {
+                const response = await fetch(`/get_os?mes=${mes}`);
+                const os_codigos = await response.json();
+                preencherSelect('os', os_codigos);
+                document.getElementById('os').disabled = false;
+            }
+        }
+
+        async function atualizarCategoriaPrimaria() {
+            const os = document.getElementById('os').value;
+            if (os) {
+                const response = await fetch(`/get_categoria_primaria?os=${os}`);
+                const categorias_primarias = await response.json();
+                preencherSelect('categoria_primaria', categorias_primarias);
+                document.getElementById('categoria_primaria').disabled = false;
+            }
+        }
+
+        async function atualizarCategoriaSecundaria() {
+            const categoria_primaria = document.getElementById('categoria_primaria').value;
+            if (categoria_primaria) {
+                const response = await fetch(`/get_categoria_secundaria?categoria_primaria=${categoria_primaria}`);
+                const categorias_secundarias = await response.json();
+                preencherSelect('categoria_secundaria', categorias_secundarias);
+                document.getElementById('categoria_secundaria').disabled = false;
+            }
+        }
+
+        function preencherSelect(selectId, options) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = `<option value="">Selecione</option>`;
+            options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option;
+                optionElement.textContent = option;
+                select.appendChild(optionElement);
+            });
+        }
+    </script>
+</body>
+</html>
