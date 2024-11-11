@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Registro</title>
+</head>
+<body>
+    <h1>Adicionar Novo Registro</h1>
+
+    <!-- Exibir mensagens de sucesso ou erro -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div id="mensagens">
+                {% for category, message in messages %}
+                    <p style="color: {{ 'green' if category == 'success' else 'red' if category == 'error' }}; font-weight: bold;">
+                        {{ message }}
+                    </p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Formulário para adicionar registro -->
+    <form method="POST" action="{{ url_for('add_record') }}">
+        <!-- Seleção de Ano com apenas o ano atual e o próximo ano -->
+        <label for="anos">Ano:</label>
+        <select name="anos" id="anos" required>
+            {% for ano in anos %}
+                <option value="{{ ano }}">{{ ano }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <!-- Seleção de Site -->
+        <label for="sites">Site:</label>
+        <select name="sites" id="sites" required>
+            {% for site in sites %}
+                <option value="{{ site }}">{{ site }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <!-- Seleção de Código OS -->
+        <label for="os">Código OS:</label>
+        <select name="os" id="os" required>
+            {% for codigo_os in os_codigos %}
+                <option value="{{ codigo_os }}">{{ codigo_os }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <!-- Seleção de Mês -->
+        <label for="mes">Mês:</label>
+        <select name="mes" id="mes" required>
+            {% for mes in meses %}
+                <option value="{{ mes }}">{{ mes }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <!-- Seleção de Categoria Primária -->
+        <label for="categoria_primaria">Categoria Primária:</label>
+        <select name="categoria_primaria" id="categoria_primaria" required>
+            {% for categoria in categorias_primarias %}
+                <option value="{{ categoria }}">{{ categoria }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <!-- Seleção de Categoria Secundária -->
+        <label for="categoria_secundaria">Categoria Secundária:</label>
+        <select name="categoria_secundaria" id="categoria_secundaria" required>
+            {% for categoria_secundaria in categorias_secundarias %}
+                <option value="{{ categoria_secundaria }}">{{ categoria_secundaria }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <!-- Campo de entrada para Path -->
+        <label for="path">Path:</label>
+        <input type="text" name="path" id="path" required><br><br>
+
+        <!-- Campo de entrada para Código OS -->
+        <label for="codigo_os">Código OS:</label>
+        <input type="text" name="codigo_os" id="codigo_os" required><br><br>
+
+        <button type="submit">Adicionar Registro</button>
+    </form>
+</body>
+</html>

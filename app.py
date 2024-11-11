@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect,url_for,flash
 import pyodbc
 import os
 from os.path import join
 from rich import print
 import subprocess
-
+from datetime import datetime
 app = Flask(__name__)
 app.secret_key = 'chavesecreta'
 
@@ -146,6 +146,60 @@ def home():
                            codigos_encontrados=codigos_encontrados, 
                            codigos_nao_encontrados=codigos_nao_encontrados)
 
+
+@app.route('/add', methods=['GET'])
+def add():
+    # Calcula o ano atual e o próximo ano
+    current_year = datetime.now().year
+    next_year = current_year + 1
+    anos = [current_year, next_year]
+
+    cursor = conn.cursor()
+    cursor.execute("SELECT DISTINCT SITES FROM Procura")
+    sites = [row[0] for row in cursor.fetchall()]
+
+    cursor.execute("SELECT DISTINCT OS FROM Procura")
+    os_codigos = [row[0] for row in cursor.fetchall()]
+
+    cursor.execute("SELECT DISTINCT MES FROM Procura")
+    meses = [row[0] for row in cursor.fetchall()]
+
+    cursor.execute("SELECT DISTINCT CATEGORIA_PRIMARIA FROM Procura")
+    categorias_primarias = [row[0] for row in cursor.fetchall()]
+
+    cursor.execute("SELECT DISTINCT CATEGORIA_SECUNDARIA FROM Procura")
+    categorias_secundarias = [row[0] for row in cursor.fetchall()]
+
+    return render_template('add_record.html', anos=anos, sites=sites, os_codigos=os_codigos, 
+                           meses=meses, categorias_primarias=categorias_primarias, 
+                           categorias_secundarias=categorias_secundarias)
+
+# Rota para processar o formulário e adicionar o registro ao banco de dados
+@app.route('/add_record', methods=['POST'])
+def add_record():
+    if request.method == 'POST':
+        # Obter dados do formulário
+        ano = request.form.get('anos')
+        site = request.form.get('sites')
+        codigo_os = request.form.get('os')
+        mes = request.form.get('mes')
+        categoria_primaria = request.form.get('categoria_primaria')
+        categoria_secundaria = request.form.get('categoria_secundaria')
+        path = request.form.get('path')
+        
+        try:
+            # Inserir dados no banco de dados, com erro_path definido como False
+            cursor = conn.cursor()
+            query = """
+                INSERT INTO Procura (ANOS, SITES, OS, MES, CATEGORIA_PRIMARIA, CATEGORIA_SECUNDARIA, PATH, PATH_erro)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """
+            cursor.execute(query, (ano, site, codigo_os, mes, categoria_primaria, categoria_secundaria, path, False))
+            conn.commit()
+            flash("Registro adicionado com sucesso!", "success")
+        except Exception as e:
+            return(f"Erro ao adicionar o registro: {str(e)}", "error")
+        return redirect(url_for('add'))
 
 
 @app.route('/abrir_diretorio/<codigo>')
